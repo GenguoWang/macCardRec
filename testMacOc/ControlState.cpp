@@ -7,8 +7,11 @@
 //
 
 #include "ControlState.h"
+#include "App.h"
 namespace kingo
 {
+    State::~State(){}
+    
     State * InitState::handleAction(Action act)
     {
         if(act.type == Action::KEY && act.keyVal == Action::KEY_O)
@@ -35,7 +38,7 @@ namespace kingo
             {
                 right = act.mouseX;
                 bottom = act.mouseY;
-                //todo
+                gApp->setMainRect(left, top, right, bottom);
                 return new InitState();
             }
         }
@@ -45,6 +48,11 @@ namespace kingo
     StateManager::StateManager()
     {
         currentState = new InitState();
+    }
+    
+    StateManager::~StateManager()
+    {
+        if(currentState) delete currentState;
     }
     
     void StateManager::handleAction(Action act)

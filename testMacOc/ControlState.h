@@ -12,6 +12,11 @@
 #include <stdio.h>
 namespace kingo
 {
+    class App;
+}
+extern kingo::App *gApp;
+namespace kingo
+{
     class Action
     {
     public:
@@ -56,6 +61,7 @@ namespace kingo
     private:
         State *currentState;
     public:
+        ~StateManager();
         StateManager();
         void handleAction(Action act);
     };
