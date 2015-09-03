@@ -24,6 +24,7 @@ kingo::App *gApp;
 Mat matFromCGImageRef(CGImageRef imageRef)
 {
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
+    NSLog(@"%@",colorSpace);
     CGFloat cols = CGImageGetWidth(imageRef);
     CGFloat rows = CGImageGetHeight(imageRef);
     cv::Mat cvMat(rows, cols, CV_8UC4); // 8 bits per component, 4 channels
@@ -75,7 +76,7 @@ int main(int argc, const char * argv[]) {
         Mat screenShot = getScreenShot();
         showMat = screenShot(cv::Rect(0,0,100,100));
         CGFloat height = screenShot.size[0];
-        id globalHandler =
+        imshow("main",showMat);//must before add global monitor
         [NSEvent addGlobalMonitorForEventsMatchingMask:NSLeftMouseUpMask handler:^(NSEvent *) {
             NSLog(@"left click");
             NSPoint mouseLoc;
@@ -87,10 +88,8 @@ int main(int argc, const char * argv[]) {
             act.type = kingo::Action::MOUSE;
             act.mouseX = mouseLoc.x*2;
             act.mouseY = height - mouseLoc.y*2;
-            imshow("org",showMat);
-            //gApp->handleAction(act);
+            gApp->handleAction(act);
         }];
-        //[NSEvent removeMonitor:globalHandler];
         
         [NSEvent addLocalMonitorForEventsMatchingMask:NSLeftMouseUpMask handler:^NSEvent *(NSEvent * aa) {
             NSLog(@"local left click");
@@ -106,9 +105,17 @@ int main(int argc, const char * argv[]) {
         {
             int key = waitKey(500);
             if(key == 27) break; //ESC
-            cout << "key: " << key << endl;
+            //cout << "key: " << key << endl;
+            if(key > 0)
+            {
+                kingo::Action act;
+                act.type = kingo::Action::KEY;
+                act.keyVal = key;
+                gApp->handleAction(act);
+            }
             Mat screenShot = getScreenShot();
             Mat show = screenShot(gApp->getMainRect());
+            cv::resize(show,show,cv::Size(),0.25,0.25);
             imshow("main",show);
             //NSPoint mousePoint = [NSEvent ]
             /*o
@@ -117,7 +124,6 @@ int main(int argc, const char * argv[]) {
             NSLog(@"%f %f",loc.x,loc.y);
             CFRelease(event);
              */
-            
         }
     }
     return 0;

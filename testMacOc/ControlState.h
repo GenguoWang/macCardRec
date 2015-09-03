@@ -23,7 +23,7 @@ namespace kingo
         enum ActionType{KEY,MOUSE};
         enum KeyValue{
             KEY_ESC,
-            KEY_O,
+            KEY_O = 111,
             KEY_LEFT,
             KEY_RIGHT,
             KEY_UP,
