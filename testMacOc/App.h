@@ -17,12 +17,15 @@ namespace kingo
     class App{
     private:
         cv::Rect mainRect;
+        //cv::Rect card
         StateManager *stateManager;
-        
+        double rate;
     public:
         App();
         ~App();
         cv::Rect getMainRect();
+        cv::Rect cardRect();
+        double cardInterval();
         void setMainRect(double left,double top,double right, double bottom);
         void handleAction(Action act);
     };

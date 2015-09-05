@@ -21,10 +21,60 @@ using std::endl;
 
 kingo::App *gApp;
 
+std::string DataPrefix = "/Users/kingo/Documents/Projects/learnCV/learnCV/data/";
+std::string TmpPrefix = "/Users/kingo/Documents/Projects/learnCV/learnCV/tmp/";
+
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+}
+
+lua_State *g_L;
+char labelName[] = {'2','3','4','5','6','7','8','9','T','J','Q','K','A','B'};
+int getLabel(const char *name);
+int getLabel(lua_State *L,const char *name);
+int getLabel(const char *name){
+    return getLabel(g_L,name);
+}
+
+int getLabel(lua_State *L, const char *name) {
+    double z;
+    /* push functions and arguments */
+    lua_getglobal(L, "getLabel");  /* function to be called */
+    lua_pushstring(L,name);
+    /* do the call (1 arguments, 1 result) */
+    if (lua_pcall(L, 1, 1, 0) != 0)
+    {
+        fprintf(stderr, "%s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);  /* pop error message from the stack */
+    }
+    /* retrieve result */
+    z = lua_tonumber(L, -1);
+    lua_pop(L, 1);  /* pop returned value */
+    return z;
+}
+
+void setUpLua()
+{
+    lua_State *L = luaL_newstate();
+    g_L = L;
+    luaopen_io(L);
+    luaopen_base(L);
+    luaopen_table(L);
+    luaopen_string(L);
+    luaopen_math(L);
+    luaL_openlibs(L);
+    int s = luaL_dofile(L, (DataPrefix+"getLabel.lua").c_str());
+    if(s){
+        fprintf(stderr, "%s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);  /* pop error message from the stack */
+    }
+}
+
 Mat matFromCGImageRef(CGImageRef imageRef)
 {
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
-    NSLog(@"%@",colorSpace);
     CGFloat cols = CGImageGetWidth(imageRef);
     CGFloat rows = CGImageGetHeight(imageRef);
     cv::Mat cvMat(rows, cols, CV_8UC4); // 8 bits per component, 4 channels
@@ -70,7 +120,11 @@ int main(int argc, const char * argv[]) {
         cout << screenMat.size[0] << " " << screenMat.size[1] << endl;
         showMat = screenMat(cv::Rect(0,0,100,100));
         imshow("org",showMat);
-        
+        //NSPoint mousePoint = [NSEvent ]
+            CGEventRef event = CGEventCreate(nil);
+            CGPoint loc = CGEventGetLocation(event);
+            NSLog(@"%f %f",loc.x,loc.y);
+            CFRelease(event);
         
          */
         Mat screenShot = getScreenShot();
@@ -101,6 +155,7 @@ int main(int argc, const char * argv[]) {
             return aa;
         }];
         gApp = new kingo::App();
+        setUpLua();
         while(true)
         {
             int key = waitKey(500);
@@ -115,15 +170,37 @@ int main(int argc, const char * argv[]) {
             }
             Mat screenShot = getScreenShot();
             Mat show = screenShot(gApp->getMainRect());
+            
+            cv::Rect cardRect = gApp->cardRect();
+            double interval = gApp->cardInterval();
+            string label;
+            for (int i = 0; i < 5; ++i)
+            {
+                if(cardRect.x+cardRect.width > show.size[1]) break;
+                if(cardRect.y+cardRect.height > show.size[0]) break;
+                Mat card = show(cardRect);
+                Mat gray;
+                cvtColor(card, gray, CV_RGB2GRAY);
+                threshold(gray, gray, 80, 255, THRESH_BINARY);
+                resize(gray, gray, cv::Size(12,18), 0.5, 0.5);
+                imshow(string("out")+char('0'+i),gray);
+                string outFileName = TmpPrefix + string("out") + char('0'+i) +".jpg";
+                imwrite(outFileName,gray);
+                int idx = getLabel(outFileName.c_str());
+                if(idx >=1 && idx <= 14)
+                {
+                    std::cout << labelName[idx-1] << std::endl;
+                    label += labelName[idx-1];
+                }
+                else{
+                    std::cout << "unknow" << std::endl;
+                }
+                cardRect.x += interval;
+            }
+            
             cv::resize(show,show,cv::Size(),0.25,0.25);
             imshow("main",show);
-            //NSPoint mousePoint = [NSEvent ]
-            /*o
-            CGEventRef event = CGEventCreate(nil);
-            CGPoint loc = CGEventGetLocation(event);
-            NSLog(@"%f %f",loc.x,loc.y);
-            CFRelease(event);
-             */
+            
         }
     }
     return 0;

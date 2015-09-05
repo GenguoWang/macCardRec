@@ -60,6 +60,7 @@
 		DC6013F91B948C8F00F2C665 /* libopencv_videostab.3.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC6013C71B948C8E00F2C665 /* libopencv_videostab.3.0.0.dylib */; };
 		DC6013FA1B948C8F00F2C665 /* libopencv_videostab.3.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DC6013C81B948C8E00F2C665 /* libopencv_videostab.3.0.0.dylib */; };
 		DC6013FC1B94942500F2C665 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC6013FB1B94942500F2C665 /* ApplicationServices.framework */; };
+		DCA815A81B9837580092EAF9 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA815A61B9837580092EAF9 /* Util.cpp */; };
 		DCD74B941B97EF5B0005E13A /* ControlState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCD74B921B97EF5B0005E13A /* ControlState.cpp */; };
 		DCD74B971B9801A60005E13A /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCD74B951B9801A60005E13A /* App.cpp */; };
 		DCDFDF3E1B9735C100B3FFA5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDFDF3D1B9735C100B3FFA5 /* AppKit.framework */; };
@@ -132,6 +133,8 @@
 		DC6013C71B948C8E00F2C665 /* libopencv_videostab.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.3.0.0.dylib; path = ../../../../../../usr/local/lib/libopencv_videostab.3.0.0.dylib; sourceTree = "<group>"; };
 		DC6013C81B948C8E00F2C665 /* libopencv_videostab.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.3.0.0.dylib; path = ../../../../../../usr/local/lib/libopencv_videostab.3.0.0.dylib; sourceTree = "<group>"; };
 		DC6013FB1B94942500F2C665 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		DCA815A61B9837580092EAF9 /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = "<group>"; };
+		DCA815A71B9837580092EAF9 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		DCD74B921B97EF5B0005E13A /* ControlState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ControlState.cpp; sourceTree = "<group>"; };
 		DCD74B931B97EF5B0005E13A /* ControlState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlState.h; sourceTree = "<group>"; };
 		DCD74B951B9801A60005E13A /* App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = App.cpp; sourceTree = "<group>"; };
@@ -230,6 +233,8 @@
 				DCD74B931B97EF5B0005E13A /* ControlState.h */,
 				DCD74B951B9801A60005E13A /* App.cpp */,
 				DCD74B961B9801A60005E13A /* App.h */,
+				DCA815A61B9837580092EAF9 /* Util.cpp */,
+				DCA815A71B9837580092EAF9 /* Util.h */,
 			);
 			path = testMacOc;
 			sourceTree = "<group>";
@@ -351,6 +356,7 @@
 				DCD74B971B9801A60005E13A /* App.cpp in Sources */,
 				DC60138E1B948B0D00F2C665 /* main.mm in Sources */,
 				DCD74B941B97EF5B0005E13A /* ControlState.cpp in Sources */,
+				DCA815A81B9837580092EAF9 /* Util.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +453,12 @@
 					/Users/kingo/workshop/torch/install/lib,
 					/usr/local/lib,
 				);
+				OTHER_LDFLAGS = (
+					"-pagezero_size",
+					10000,
+					"-image_base",
+					100000000,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -463,6 +475,12 @@
 				LIBRARY_SEARCH_PATHS = (
 					/Users/kingo/workshop/torch/install/lib,
 					/usr/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-pagezero_size",
+					10000,
+					"-image_base",
+					100000000,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
